@@ -356,9 +356,6 @@ class Evaluator(Generic[InputT, OutputT]):
                     if isinstance(v, Model):
                         # Serialize Model instance to model_id
                         _dict["model_id"] = self._get_model_id(v)
-                    elif v is None and "model" in defaults and defaults["model"] is None:
-                        # model=None is default, serialize as model_id with default value
-                        _dict["model_id"] = self._get_model_id(None)
                     elif v is not None:
                         # String model ID, include as-is
                         _dict[k] = v

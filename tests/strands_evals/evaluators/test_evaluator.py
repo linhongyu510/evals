@@ -156,7 +156,7 @@ def test_to_dict_with_string_model():
 
 
 def test_to_dict_with_none_model():
-    """Test that to_dict handles None model correctly (uses default)"""
+    """Test that to_dict omits a default None model."""
 
     evaluator = OutputEvaluator(rubric="test rubric", model=None)
     evaluator_dict = evaluator.to_dict()
@@ -164,7 +164,7 @@ def test_to_dict_with_none_model():
     assert evaluator_dict["evaluator_type"] == "OutputEvaluator"
     assert evaluator_dict["rubric"] == "test rubric"
     assert "model" not in evaluator_dict
-    assert evaluator_dict["model_id"] == DEFAULT_BEDROCK_MODEL_ID
+    assert "model_id" not in evaluator_dict
 
 
 def test_has_text_content_with_single_text_at_start():

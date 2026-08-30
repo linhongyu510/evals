@@ -25,7 +25,6 @@ from strands_evals.evaluators import (
     ToolCalled,
     TrajectoryEvaluator,
 )
-from strands_evals.evaluators.evaluator import DEFAULT_BEDROCK_MODEL_ID
 from strands_evals.evaluators.skill_selection_accuracy_evaluator import SkillSelectionScore
 from strands_evals.experiment import _get_label_from_score, is_throttling_error
 from strands_evals.providers.trace_provider import TraceProvider
@@ -374,8 +373,23 @@ def test_experiment_to_dict_OutputEvaluator_default():
                 "metadata": None,
             }
         ],
-        "evaluators": [{"evaluator_type": "OutputEvaluator", "rubric": "rubric", "model_id": DEFAULT_BEDROCK_MODEL_ID}],
+        "evaluators": [{"evaluator_type": "OutputEvaluator", "rubric": "rubric"}],
     }
+
+
+def test_experiment_to_dict_from_dict_preserves_default_model():
+    """A default model remains unpinned across a serialization round trip."""
+    experiment = Experiment(
+        cases=[Case(name="test", input="hello", expected_output="world")],
+        evaluators=[OutputEvaluator(rubric="rubric")],
+    )
+
+    serialized = experiment.to_dict()
+    restored = Experiment.from_dict(serialized)
+
+    assert "model" not in serialized["evaluators"][0]
+    assert "model_id" not in serialized["evaluators"][0]
+    assert restored.evaluators[0].model is None
 
 
 def test_experiment_to_dict_TrajectoryEvaluator_default():
@@ -403,7 +417,6 @@ def test_experiment_to_dict_TrajectoryEvaluator_default():
             {
                 "evaluator_type": "TrajectoryEvaluator",
                 "rubric": "rubric",
-                "model_id": DEFAULT_BEDROCK_MODEL_ID,
             }
         ],
     }
@@ -466,7 +479,6 @@ def test_experiment_to_dict_InteractionsEvaluator_default():
             {
                 "evaluator_type": "InteractionsEvaluator",
                 "rubric": "rubric",
-                "model_id": DEFAULT_BEDROCK_MODEL_ID,
             }
         ],
     }
